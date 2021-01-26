@@ -1,0 +1,23 @@
+{
+  "name": "buless",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "buless": "./index.js"
+  },
+  "author": "bigggge",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/generator": "^7.12.11",
+    "@babel/parser": "^7.12.11",
+    "@babel/traverse": "^7.12.12",
+    "@rollup/plugin-commonjs": "^17.0.0",
+    "koa": "^2.13.1",
+    "koa-compress": "^5.0.1",
+    "open": "^7.3.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "rollup": "^2.37.1"
+  }
+}
