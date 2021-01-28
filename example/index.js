@@ -9,6 +9,6 @@ class Hello extends React.Component {
 }
 
 ReactDOM.render(
-  React.createElement(Hello, {toWhat: 'World'}, null),
+  React.createElement(Hello, {toWhat: 'React'}, null),
   document.getElementById('root')
 );
