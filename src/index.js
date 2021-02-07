@@ -62,15 +62,27 @@ app.use((ctx, next) => {
   return next();
 });
 
-plugins.forEach((plugin) => {
-  console.log("load...", plugin);
-  plugin({
-    root: process.cwd(),
-    app,
+function loadPlugins() {
+  plugins.forEach((plugin) => {
+    console.log("loading plugin:", plugin.name, "...");
+    plugin({
+      root: process.cwd(),
+      app,
+    });
   });
-});
+}
 
+console.log("--- [buless] ---");
+// 加载插件
+loadPlugins();
+// 启动服务
 app.listen(9000, async () => {
-  await preloadPkg();
-  open("http://localhost:9000");
+  try {
+    await preloadPkg();
+    open("http://localhost:9000");
+  } catch (e) {
+    console.log("--- [error] ---");
+    console.log("启动失败", e.message);
+    console.log("--- [buless error] ---");
+  }
 });

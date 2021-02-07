@@ -24,7 +24,6 @@ const img = ({ app, root }) => {
       if (url.endsWith(img.ext)) {
         console.log("image", url);
         const p = path.resolve(root, url.slice(1));
-        console.log(p);
         const file = fs.readFileSync(p, "utf-8");
         ctx.type = img.MIME;
         ctx.body = file;
