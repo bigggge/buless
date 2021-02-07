@@ -1,6 +1,6 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css'
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
 
 class Hello extends React.Component {
   render() {
@@ -8,7 +8,4 @@ class Hello extends React.Component {
   }
 }
 
-ReactDOM.render(
-  <Hello toWhat={'JSX'} />,
-  document.getElementById('root-jsx')
-);
+ReactDOM.render(<Hello toWhat={"JSX"} />, document.getElementById("root-jsx"));

@@ -21,7 +21,9 @@
     "open": "^7.3.1",
     "rollup": "^2.37.1"
   },
-  "peerDependencies": {
+  "devDependencies": {
+    "dayjs": "^1.10.4",
+    "prettier": "2.2.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "vue": "^3.0.5"
