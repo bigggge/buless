@@ -40,44 +40,28 @@ function getEntry(pkgName) {
   };
 }
 
+function _rewriteImport(path) {
+  if (path.node.source) {
+    const source = path.node.source.value;
+    if (
+      source[0] !== "/" &&
+      source[0] !== "." &&
+      source.indexOf("http") !== 0
+    ) {
+      path.node.source.value = "/@modules/" + source;
+    }
+  }
+}
+
 function rewriteImport(content) {
   const time1 = Date.now();
   console.log("-rewriteImport 0-");
   const ast = parse(content, { sourceType: "module" });
   console.log("-rewriteImport 1-" + (Date.now() - time1));
   traverse(ast, {
-    ImportDeclaration: (path) => {
-      const source = path.node.source.value;
-      if (
-        source[0] !== "/" &&
-        source[0] !== "." &&
-        source.indexOf("http") !== 0
-      ) {
-        path.node.source.value = "/@modules/" + source;
-      }
-    },
-    ExportAllDeclaration: (path) => {
-      const source = path.node.source.value;
-      if (
-        source[0] !== "/" &&
-        source[0] !== "." &&
-        source.indexOf("http") !== 0
-      ) {
-        path.node.source.value = "/@modules/" + source;
-      }
-    },
-    ExportNamedDeclaration: (path) => {
-      if (path.node.source) {
-        const source = path.node.source.value;
-        if (
-          source[0] !== "/" &&
-          source[0] !== "." &&
-          source.indexOf("http") !== 0
-        ) {
-          path.node.source.value = "/@modules/" + source;
-        }
-      }
-    },
+    ImportDeclaration: _rewriteImport,
+    ExportAllDeclaration: _rewriteImport,
+    ExportNamedDeclaration: _rewriteImport,
   });
   console.log("-rewriteImport 2-" + (Date.now() - time1));
   const { code } = generate(ast, {
