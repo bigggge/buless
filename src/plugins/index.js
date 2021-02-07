@@ -1,11 +1,11 @@
 const pluginCss = require('./pluginCss');
 const pluginEsm = require('./pluginEsm');
-const pluginReact = require('./pluginReact');
+const pluginJsx = require('./pluginJsx');
 
 const plugins = [
   pluginCss,
   pluginEsm,
-  pluginReact
+  pluginJsx
 ]
 
 module.exports = plugins;

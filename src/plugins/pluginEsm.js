@@ -23,6 +23,7 @@ const esm = ({ app, root }) => {
       console.log("-modules 1-" + url + "---" + (Date.now() - time1))
       // 支持 esm
       if (esmEnable) {
+        console.log("esm supported", url)
         content = fs.readFileSync(path.resolve(pkgPath, packageJson.module), 'utf-8');
       } else {
         console.log("esm not supported")

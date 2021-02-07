@@ -81,6 +81,6 @@ plugins.forEach(plugin => {
 });
 
 app.listen(9000, async () => {
-  await preloadPkg()
+  // await preloadPkg()
   open("http://localhost:9000")
 });

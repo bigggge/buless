@@ -41,8 +41,22 @@ function rewriteImport(content) {
   traverse(ast, {
     ImportDeclaration: (path) => {
       const source = path.node.source.value
-      if (source[0] !== "/" && source[0] !== ".") {
+      if (source[0] !== "/" && source[0] !== "." && source.indexOf("http") !== 0) {
         path.node.source.value = "/@modules/" + source;
+      }
+    },
+    ExportAllDeclaration: (path) => {
+      const source = path.node.source.value
+      if (source[0] !== "/" && source[0] !== "." && source.indexOf("http") !== 0) {
+        path.node.source.value = "/@modules/" + source;
+      }
+    },
+    ExportNamedDeclaration: (path) => {
+      if (path.node.source) {
+        const source = path.node.source.value
+        if (source[0] !== "/" && source[0] !== "." && source.indexOf("http") !== 0) {
+          path.node.source.value = "/@modules/" + source;
+        }
       }
     },
   });
