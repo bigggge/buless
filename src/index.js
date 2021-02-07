@@ -29,13 +29,13 @@ function getImports(content) {
 async function preloadPkg() {
   let content = fs.readFileSync("./index.js", "utf-8");
   const deps = getImports(content);
-  console.log("预编译模块..." + deps);
+  console.log("[buless] preloading..." + deps);
   for (let i = 0; i < deps.length; i++) {
     const { entry, pkgPath } = getEntry(deps[i]);
     content = await transform2ESM(path.resolve(pkgPath, entry));
     loadedPkg.set(deps[i], content);
   }
-  console.log("预编译模块成功");
+  console.log("[buless] preload success");
 }
 
 app.use(gzip);
@@ -44,7 +44,7 @@ app.use((ctx, next) => {
   const {
     request: { url },
   } = ctx;
-  console.log("url:", url);
+  console.log("[buless] url:", url);
   if (url === "/") {
     let content = fs.readFileSync(entry, "utf-8");
     // noinspection JSValidateTypes
@@ -64,7 +64,7 @@ app.use((ctx, next) => {
 
 function loadPlugins() {
   plugins.forEach((plugin) => {
-    console.log("loading plugin:", plugin.name, "...");
+    console.log("[buless] loading plugin:", plugin.name, "...");
     plugin({
       root: process.cwd(),
       app,

@@ -9,7 +9,7 @@ const compress = require("koa-compress");
 const loadedPkg = new Map();
 
 async function transform2ESM(input) {
-  console.log("transform2ESM", input);
+  console.log("[buless] transform2ESM", input);
   const bundle = await rollup({
     input,
     plugins: [commonjs({ sourceMap: false })],
@@ -27,16 +27,21 @@ function getEntry(pkgName) {
   let _path = "";
 
   if (pkgName[0] !== "@") {
-    const _ = pkgName.split("/");
-    pkgName = _[0];
-    _path = _[1] || "";
+    const [_p, ...paths] = pkgName.split("/");
+    pkgName = _p;
+    _path = paths.join("/") || "";
   }
   const pkgPath = path.resolve(__dirname, "../node_modules", pkgName);
   const packageJson = require(pkgPath + "/package.json");
   return {
-    entry: _path ? _path + ".js" : packageJson.main || "index.js",
+    entry: _path
+      ? _path.endsWith(".js")
+        ? _path
+        : _path + ".js"
+      : packageJson.main || "index.js",
     packageJson,
     pkgPath,
+    esm: !_path,
   };
 }
 
@@ -55,19 +60,17 @@ function _rewriteImport(path) {
 
 function rewriteImport(content) {
   const time1 = Date.now();
-  console.log("-rewriteImport 0-");
+  console.log("[buless] -rewriteImport 0-");
   const ast = parse(content, { sourceType: "module" });
-  console.log("-rewriteImport 1-" + (Date.now() - time1));
   traverse(ast, {
     ImportDeclaration: _rewriteImport,
     ExportAllDeclaration: _rewriteImport,
     ExportNamedDeclaration: _rewriteImport,
   });
-  console.log("-rewriteImport 2-" + (Date.now() - time1));
   const { code } = generate(ast, {
     /* options */
   });
-  console.log("-rewriteImport 3-" + (Date.now() - time1));
+  console.log("[buless] -rewriteImport 3-" + (Date.now() - time1));
   return code;
 }
 
