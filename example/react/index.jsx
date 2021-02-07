@@ -4,7 +4,12 @@ import "./index.css";
 
 class Hello extends React.Component {
   render() {
-    return <div>Hello {this.props.toWhat}</div>;
+    return (
+      <div>
+        <img src="./logo.svg" width={50} />
+        <div>Hello {this.props.toWhat}</div>
+      </div>
+    );
   }
 }
 

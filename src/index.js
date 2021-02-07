@@ -6,9 +6,8 @@ const Koa = require("koa");
 const { parse } = require("@babel/parser");
 const traverse = require("@babel/traverse").default;
 const open = require("open");
-const compress = require("koa-compress");
 const plugins = require("./plugins");
-const { loadedPkg, transform2ESM, getEntry } = require("./utils");
+const { loadedPkg, transform2ESM, getEntry, gzip } = require("./utils");
 
 const app = new Koa();
 const entry = process.argv[2] || "index.html";
@@ -39,21 +38,7 @@ async function preloadPkg() {
   console.log("预编译模块成功");
 }
 
-app.use(
-  compress({
-    filter(content_type) {
-      return /text|application\/javascript/i.test(content_type);
-    },
-    threshold: 2048,
-    gzip: {
-      flush: require("zlib").constants.Z_SYNC_FLUSH,
-    },
-    deflate: {
-      flush: require("zlib").constants.Z_SYNC_FLUSH,
-    },
-    br: false,
-  })
-);
+app.use(gzip);
 
 app.use((ctx, next) => {
   const {
@@ -62,6 +47,7 @@ app.use((ctx, next) => {
   console.log("url:", url);
   if (url === "/") {
     let content = fs.readFileSync(entry, "utf-8");
+    // noinspection JSValidateTypes
     content = content.replace(
       `<script`,
       `
@@ -85,6 +71,6 @@ plugins.forEach((plugin) => {
 });
 
 app.listen(9000, async () => {
-  // await preloadPkg()
+  await preloadPkg();
   open("http://localhost:9000");
 });

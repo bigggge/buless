@@ -4,6 +4,7 @@ const commonjs = require("@rollup/plugin-commonjs");
 const { parse } = require("@babel/parser");
 const traverse = require("@babel/traverse").default;
 const generate = require("@babel/generator").default;
+const compress = require("koa-compress");
 
 const loadedPkg = new Map();
 
@@ -86,9 +87,24 @@ function rewriteImport(content) {
   return code;
 }
 
+const gzip = compress({
+  filter(content_type) {
+    return /text|application\/javascript/i.test(content_type);
+  },
+  threshold: 2048,
+  gzip: {
+    flush: require("zlib").constants.Z_SYNC_FLUSH,
+  },
+  deflate: {
+    flush: require("zlib").constants.Z_SYNC_FLUSH,
+  },
+  br: false,
+});
+
 module.exports = {
   loadedPkg,
   transform2ESM,
   getEntry,
   rewriteImport,
+  gzip,
 };
