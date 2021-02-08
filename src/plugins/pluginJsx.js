@@ -9,9 +9,6 @@ const jsx = ({ app, root }) => {
       request: { url },
     } = ctx;
     if (url.endsWith(".jsx")) {
-      console.log("jsx", url);
-      const time1 = Date.now();
-      console.log("-jsx-" + url + "---");
       const p = path.resolve(root, url.slice(1));
       const file = fs.readFileSync(p, "utf-8");
       const result = await babel.transform(file, {
@@ -19,7 +16,6 @@ const jsx = ({ app, root }) => {
       });
       ctx.type = "application/javascript";
       ctx.body = rewriteImport(result.code);
-      console.log("-jsx-" + url + "---" + (Date.now() - time1));
     }
     return next();
   });

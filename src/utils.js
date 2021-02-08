@@ -6,7 +6,7 @@ const traverse = require("@babel/traverse").default;
 const generate = require("@babel/generator").default;
 const compress = require("koa-compress");
 
-const loadedPkg = new Map();
+const loadedCode = new Map();
 
 async function transform2ESM(input) {
   console.log("[buless] transform2ESM", input);
@@ -45,7 +45,7 @@ function getEntry(pkgName) {
   };
 }
 
-function _rewriteImport(path) {
+function astHandler(path) {
   if (path.node.source) {
     const source = path.node.source.value;
     if (
@@ -59,18 +59,15 @@ function _rewriteImport(path) {
 }
 
 function rewriteImport(content) {
-  const time1 = Date.now();
-  console.log("[buless] -rewriteImport 0-");
   const ast = parse(content, { sourceType: "module" });
   traverse(ast, {
-    ImportDeclaration: _rewriteImport,
-    ExportAllDeclaration: _rewriteImport,
-    ExportNamedDeclaration: _rewriteImport,
+    ImportDeclaration: astHandler,
+    ExportAllDeclaration: astHandler,
+    ExportNamedDeclaration: astHandler,
   });
   const { code } = generate(ast, {
     /* options */
   });
-  console.log("[buless] -rewriteImport 3-" + (Date.now() - time1));
   return code;
 }
 
@@ -89,7 +86,7 @@ const gzip = compress({
 });
 
 module.exports = {
-  loadedPkg,
+  loadedCode,
   transform2ESM,
   getEntry,
   rewriteImport,

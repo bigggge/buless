@@ -7,7 +7,8 @@ const { parse } = require("@babel/parser");
 const traverse = require("@babel/traverse").default;
 const open = require("open");
 const plugins = require("./plugins");
-const { loadedPkg, transform2ESM, getEntry, gzip } = require("./utils");
+const { loadedCode } = require("./utils");
+const { transform2ESM, getEntry, gzip, rewriteImport } = require("./utils");
 
 const app = new Koa();
 const entry = process.argv[2] || "index.html";
@@ -27,13 +28,15 @@ function getImports(content) {
 }
 
 async function preloadPkg() {
-  let content = fs.readFileSync("./index.js", "utf-8");
-  const deps = getImports(content);
+  const entryJs = fs.readFileSync("./index.js", "utf-8");
+  let content, code;
+  const deps = getImports(entryJs);
   console.log("[buless] preloading..." + deps);
   for (let i = 0; i < deps.length; i++) {
     const { entry, pkgPath } = getEntry(deps[i]);
     content = await transform2ESM(path.resolve(pkgPath, entry));
-    loadedPkg.set(deps[i], content);
+    code = await rewriteImport(content);
+    loadedCode.set(deps[i], code);
   }
   console.log("[buless] preload success");
 }

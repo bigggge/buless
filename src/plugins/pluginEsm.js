@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const {
-  loadedPkg,
+  loadedCode,
   transform2ESM,
   getEntry,
   rewriteImport,
@@ -25,17 +25,20 @@ const esm = ({ app, root }) => {
           path.resolve(pkgPath, packageJson.module),
           "utf-8"
         );
+        content = rewriteImport(content);
       } else {
-        if (loadedPkg.has(pkgName)) {
-          content = loadedPkg.get(pkgName);
+        if (loadedCode.has(pkgName)) {
+          console.log("[buless] package cached", pkgName);
+          content = loadedCode.get(pkgName);
         } else {
           // 不支持 esm, 就用 rollup 转成 esm
           content = await transform2ESM(path.resolve(pkgPath, entry));
-          loadedPkg.set(pkgName, content);
+          content = rewriteImport(content);
         }
       }
+      loadedCode.set(pkgName, content);
       ctx.type = "application/javascript";
-      ctx.body = rewriteImport(content);
+      ctx.body = content;
     } else if (url.endsWith(".js")) {
       const time1 = Date.now();
       const p = path.resolve(root, url.slice(1));
