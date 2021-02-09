@@ -11,6 +11,7 @@ const { loadedCode } = require("./utils");
 const { transform2ESM, getEntry, gzip, rewriteImport } = require("./utils");
 
 const app = new Koa();
+
 const entry = process.argv[2] || "index.html";
 
 function getImports(content) {
@@ -76,13 +77,18 @@ function loadPlugins() {
 }
 
 console.log("--- [buless] ---");
+console.time("ready in");
 // 加载插件
 loadPlugins();
 // 启动服务
 app.listen(9000, async () => {
   try {
     await preloadPkg();
-    open("http://localhost:9000");
+    console.timeEnd("ready in");
+    console.log("[buless] 即将启动浏览器...");
+    setTimeout(() => {
+      open("http://localhost:9000");
+    }, 1200);
   } catch (e) {
     console.log("--- [error] ---");
     console.log("启动失败", e.message);
